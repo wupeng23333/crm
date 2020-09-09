@@ -1,3 +1,4 @@
+com\wupeng\crm\workbench\dao\ActivityRemarkDao.class
 com\wupeng\crm\utils\TransactionInvocationHandler.class
 com\wupeng\crm\settings\exception\LoginException.class
 com\wupeng\crm\settings\domain\User.class
@@ -18,4 +19,5 @@ com\wupeng\crm\settings\service\impl\UserServiceImpl.class
 com\wupeng\crm\workbench\service\ActivityService.class
 com\wupeng\crm\workbench\web\controller\ActivityController.class
 com\wupeng\crm\web\filter\EncodingFilter.class
+com\wupeng\crm\vo\PaginationVO.class
 com\wupeng\crm\utils\ServiceFactory.class

@@ -10,6 +10,19 @@
     String basePath = request.getScheme() + "://" + request.getServerName() + ":"
             + request.getServerPort() + request.getContextPath() + "/";
 %>
+<script>
+    $.ajax({
+        url:"",
+        data:{
+
+        },
+        type:"",
+        dataType:"json",
+        success:function (data) {
+
+        }
+    })
+</script>
 <html>
 <head>
     <base href="<%=basePath%>">
@@ -17,5 +30,9 @@
 </head>
 <body>
 
+//创建时间：当前系统时间
+String  createTime= DateTimeUtil.getSysTime();
+//创建人：当前登录用户
+String createBy=((User)request.getSession().getAttribute("user")).getName();
 </body>
 </html>

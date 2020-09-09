@@ -18,4 +18,6 @@ E:\soft\project\crm\src\main\java\com\wupeng\crm\settings\service\impl\UserServi
 E:\soft\project\crm\src\main\java\com\wupeng\crm\utils\DateTimeUtil.java
 E:\soft\project\crm\src\main\java\com\wupeng\crm\utils\SqlSessionUtil.java
 E:\soft\project\crm\src\main\java\com\wupeng\crm\settings\dao\UserDao.java
+E:\soft\project\crm\src\main\java\com\wupeng\crm\workbench\dao\ActivityRemarkDao.java
+E:\soft\project\crm\src\main\java\com\wupeng\crm\vo\PaginationVO.java
 E:\soft\project\crm\src\main\java\com\wupeng\crm\workbench\service\impl\ActivityServiceImpl.java
