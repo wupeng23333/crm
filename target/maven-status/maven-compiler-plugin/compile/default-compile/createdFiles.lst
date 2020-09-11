@@ -12,6 +12,7 @@ com\wupeng\crm\settings\service\UserService.class
 com\wupeng\crm\workbench\service\impl\ClueServiceImpl.class
 com\wupeng\crm\workbench\domain\Tran.class
 com\wupeng\crm\workbench\web\controller\ClueController.class
+com\wupeng\crm\settings\dao\DicValueDao.class
 com\wupeng\crm\workbench\service\ClueService.class
 com\wupeng\crm\utils\PrintJson.class
 com\wupeng\crm\settings\service\impl\UserServiceImpl.class
@@ -30,6 +31,7 @@ com\wupeng\crm\utils\SqlSessionUtil.class
 com\wupeng\crm\workbench\dao\CustomerDao.class
 com\wupeng\crm\workbench\dao\ActivityDao.class
 com\wupeng\crm\workbench\dao\TranHistoryDao.class
+com\wupeng\crm\settings\dao\DicTypeDao.class
 com\wupeng\crm\workbench\domain\TranHistory.class
 com\wupeng\crm\workbench\domain\ContactsActivityRelation.class
 com\wupeng\crm\workbench\domain\Clue.class
@@ -41,8 +43,11 @@ com\wupeng\crm\utils\MD5Util.class
 com\wupeng\crm\workbench\domain\CustomerRemark.class
 com\wupeng\crm\workbench\service\impl\ActivityServiceImpl.class
 com\wupeng\crm\utils\DateTimeUtil.class
+com\wupeng\crm\settings\service\DicService.class
 com\wupeng\crm\settings\domain\DicValue.class
 com\wupeng\crm\workbench\domain\Contacts.class
 com\wupeng\crm\workbench\service\ActivityService.class
 com\wupeng\crm\workbench\dao\ClueDao.class
+com\wupeng\crm\web\listener\SysInitListener.class
+com\wupeng\crm\settings\service\impl\DicServiceImpl.class
 com\wupeng\crm\vo\PaginationVO.class
