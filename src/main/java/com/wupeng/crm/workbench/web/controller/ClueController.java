@@ -9,6 +9,7 @@ import com.wupeng.crm.utils.ServiceFactory;
 import com.wupeng.crm.utils.UUIDUtil;
 import com.wupeng.crm.workbench.domain.Activity;
 import com.wupeng.crm.workbench.domain.Clue;
+import com.wupeng.crm.workbench.domain.Tran;
 import com.wupeng.crm.workbench.service.ActivityService;
 import com.wupeng.crm.workbench.service.ClueService;
 import com.wupeng.crm.workbench.service.impl.ActivityServiceImpl;
@@ -32,33 +33,63 @@ public class ClueController extends HttpServlet {
             getUserList(request, response);
         } else if ("/workbench/clue/save.do".equals(path)) {
             save(request, response);
-        }else if ("/workbench/clue/detail.do".equals(path)) {
+        } else if ("/workbench/clue/detail.do".equals(path)) {
             detail(request, response);
-        }else if ("/workbench/clue/getActivityListByClueId.do".equals(path)) {
+        } else if ("/workbench/clue/getActivityListByClueId.do".equals(path)) {
             getActivityListByClueId(request, response);
-        }else if ("/workbench/clue/unbund.do".equals(path)) {
+        } else if ("/workbench/clue/unbund.do".equals(path)) {
             unbund(request, response);
-        }else if ("/workbench/clue/getActivityListByNameAndNotByClueId.do".equals(path)) {
+        } else if ("/workbench/clue/getActivityListByNameAndNotByClueId.do".equals(path)) {
             getActivityListByNameAndNotByClueId(request, response);
-        }else if ("/workbench/clue/bund.do".equals(path)) {
+        } else if ("/workbench/clue/bund.do".equals(path)) {
             bund(request, response);
-        }else if ("/workbench/clue/getActivityListByName.do".equals(path)) {
+        } else if ("/workbench/clue/getActivityListByName.do".equals(path)) {
             getActivityListByName(request, response);
-        }else if ("/workbench/clue/convert.do".equals(path)) {
+        } else if ("/workbench/clue/convert.do".equals(path)) {
             convert(request, response);
         }
     }
 
-    private void convert(HttpServletRequest request, HttpServletResponse response) {
+    private void convert(HttpServletRequest request, HttpServletResponse response) throws IOException {
         System.out.println("执行线索转换操作");
 
-        String clueId=request.getParameter("clueId");
+        String clueId = request.getParameter("clueId");
         //接收是否需要创建交易的标记
-        String flag=request.getParameter("flag");
-        //如果需要创建标记
-        if("a".equals(flag)){
-            //接收标记表单中的数据
+        String flag = request.getParameter("flag");
 
+        String createBy=((User)request.getSession().getAttribute("user")).getName();
+        Tran t = null;
+
+        //如果需要创建交易
+        if ("a".equals(flag)) {
+
+            t = new Tran();
+
+            //接收标记表单中的数据
+            String money = request.getParameter("money");
+            String name = request.getParameter("name");
+            String expectedDate = request.getParameter("expectedDate");
+            String stage = request.getParameter("stage");
+            String activityId = request.getParameter("activityId");
+            String id =UUIDUtil.getUUID();
+            String createTime=DateTimeUtil.getSysTime();
+
+
+            t.setId(id);
+            t.setMoney(money);
+            t.setName(name);
+            t.setExpectedDate(expectedDate);
+            t.setStage(stage);
+            t.setActivityId(activityId);
+            t.setCreateTime(createTime);
+            t.setCreateBy(createBy);
+
+        }
+        ClueService cs = (ClueService) ServiceFactory.getService(new ClueServiceImpl());
+
+        boolean flag1=cs.convert(clueId,t,createBy);
+        if (flag1){
+            response.sendRedirect(request.getContextPath()+"/workbench/clue/index.jsp");
         }
     }
 
@@ -66,44 +97,44 @@ public class ClueController extends HttpServlet {
 
         System.out.println("查询市场活动列表（根据名称模糊查）");
 
-        String aname=request.getParameter("aname");
+        String aname = request.getParameter("aname");
 
-        ActivityService as= (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
+        ActivityService as = (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
 
-        List<Activity> aList=as.getActivityListByName(aname);
+        List<Activity> aList = as.getActivityListByName(aname);
 
-        PrintJson.printJsonObj(response,aList);
+        PrintJson.printJsonObj(response, aList);
 
     }
 
     private void bund(HttpServletRequest request, HttpServletResponse response) {
 
         System.out.println("执行关联市场活动的操作");
-        String cid=request.getParameter("cid");
-        String aids[]=request.getParameterValues("aid");
+        String cid = request.getParameter("cid");
+        String aids[] = request.getParameterValues("aid");
 
-        ClueService cs= (ClueService) ServiceFactory.getService(new ClueServiceImpl());
+        ClueService cs = (ClueService) ServiceFactory.getService(new ClueServiceImpl());
 
-        boolean flag=cs.bund(cid,aids);
-        PrintJson.printJsonFlag(response,flag);
+        boolean flag = cs.bund(cid, aids);
+        PrintJson.printJsonFlag(response, flag);
     }
 
     private void getActivityListByNameAndNotByClueId(HttpServletRequest request, HttpServletResponse response) {
 
         System.out.println("查询市场活动列表（根据名称模糊查+排除掉已关联的指定线索的列表");
 
-        String aname=request.getParameter("aname");
-        String clueId=request.getParameter("clueId");
+        String aname = request.getParameter("aname");
+        String clueId = request.getParameter("clueId");
 
-        Map<String,String> map=new HashMap<String, String>();
-        map.put("aname",aname);
-        map.put("clueId",clueId);
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("aname", aname);
+        map.put("clueId", clueId);
 
-        ActivityService as= (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
+        ActivityService as = (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
 
-        List<Activity> aList=as.getActivityListByNameAndNotByClueId(map);
+        List<Activity> aList = as.getActivityListByNameAndNotByClueId(map);
 
-        PrintJson.printJsonObj(response,aList);
+        PrintJson.printJsonObj(response, aList);
 
     }
 
@@ -111,38 +142,38 @@ public class ClueController extends HttpServlet {
 
         System.out.println("执行解除关联操作");
 
-        String id=request.getParameter("id");
+        String id = request.getParameter("id");
 
-        ClueService cs= (ClueService) ServiceFactory.getService(new ClueServiceImpl());
+        ClueService cs = (ClueService) ServiceFactory.getService(new ClueServiceImpl());
 
-        boolean flag=cs.unbund(id);
-        PrintJson.printJsonFlag(response,flag);
+        boolean flag = cs.unbund(id);
+        PrintJson.printJsonFlag(response, flag);
     }
 
     private void getActivityListByClueId(HttpServletRequest request, HttpServletResponse response) {
 
         System.out.println("根据线索的id查询关联的市场活动列表");
 
-        String clueId=request.getParameter("clueId");
+        String clueId = request.getParameter("clueId");
 
-        ActivityService as= (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
+        ActivityService as = (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
 
-        List<Activity> aList=as.getActivityListByClueId(clueId);
+        List<Activity> aList = as.getActivityListByClueId(clueId);
 
-        PrintJson.printJsonObj(response,aList);
+        PrintJson.printJsonObj(response, aList);
     }
 
     private void detail(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         System.out.println("跳转到线索详细信息页");
 
-        String id=request.getParameter("id");
+        String id = request.getParameter("id");
 
-        ClueService cs= (ClueService) ServiceFactory.getService(new ClueServiceImpl());
+        ClueService cs = (ClueService) ServiceFactory.getService(new ClueServiceImpl());
 
-        Clue c=cs.detail(id);
-        request.setAttribute("c",c);
-        request.getRequestDispatcher("/workbench/clue/detail.jsp").forward(request,response);
+        Clue c = cs.detail(id);
+        request.setAttribute("c", c);
+        request.getRequestDispatcher("/workbench/clue/detail.jsp").forward(request, response);
 
     }
 
@@ -150,26 +181,26 @@ public class ClueController extends HttpServlet {
 
         System.out.println("执行线索添加操作");
 
-        String id= UUIDUtil.getUUID();
-        String fullname=request.getParameter("fullname");
-        String appellation=request.getParameter("appellation");
-        String owner=request.getParameter("owner");
-        String company=request.getParameter("company");
-        String job=request.getParameter("job");
-        String email=request.getParameter("email");
-        String phone=request.getParameter("phone");
-        String website=request.getParameter("website");
-        String mphone=request.getParameter("mphone");
-        String state=request.getParameter("state");
-        String source=request.getParameter("source");
-        String createTime= DateTimeUtil.getSysTime();
-        String createBy=((User)request.getSession().getAttribute("user")).getName();
-        String description =request.getParameter("description");
-        String contactSummary=request.getParameter("contactSummary");
-        String nextContactTime=request.getParameter("nextContactTime");
-        String address=request.getParameter("address");
+        String id = UUIDUtil.getUUID();
+        String fullname = request.getParameter("fullname");
+        String appellation = request.getParameter("appellation");
+        String owner = request.getParameter("owner");
+        String company = request.getParameter("company");
+        String job = request.getParameter("job");
+        String email = request.getParameter("email");
+        String phone = request.getParameter("phone");
+        String website = request.getParameter("website");
+        String mphone = request.getParameter("mphone");
+        String state = request.getParameter("state");
+        String source = request.getParameter("source");
+        String createTime = DateTimeUtil.getSysTime();
+        String createBy = ((User) request.getSession().getAttribute("user")).getName();
+        String description = request.getParameter("description");
+        String contactSummary = request.getParameter("contactSummary");
+        String nextContactTime = request.getParameter("nextContactTime");
+        String address = request.getParameter("address");
 
-        Clue c=new Clue();
+        Clue c = new Clue();
         c.setId(id);
         c.setAddress(address);
         c.setAppellation(appellation);
@@ -189,10 +220,10 @@ public class ClueController extends HttpServlet {
         c.setSource(source);
         c.setNextContactTime(nextContactTime);
 
-        ClueService cs= (ClueService) ServiceFactory.getService(new ClueServiceImpl());
+        ClueService cs = (ClueService) ServiceFactory.getService(new ClueServiceImpl());
 
-        boolean flag=cs.save(c);
-        PrintJson.printJsonFlag(response,flag);
+        boolean flag = cs.save(c);
+        PrintJson.printJsonFlag(response, flag);
 
     }
 
@@ -200,11 +231,11 @@ public class ClueController extends HttpServlet {
 
         System.out.println("取得用户信息列表");
 
-        UserService us= (UserService) ServiceFactory.getService(new UserServiceImpl());
+        UserService us = (UserService) ServiceFactory.getService(new UserServiceImpl());
 
-        List<User> uList=us.getUserList();
+        List<User> uList = us.getUserList();
 
-        PrintJson.printJsonObj(response,uList);
+        PrintJson.printJsonObj(response, uList);
 
     }
 

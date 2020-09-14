@@ -115,7 +115,7 @@
                     $("#tranForm").submit();
                 } else {
                     //alert("不需要创建交易")
-                    window.location.href = "/workbench/clue/convert.do?clueId=${param.id}";
+                    window.location.href = "workbench/clue/convert.do?clueId=${param.id}";
                 }
 
 
