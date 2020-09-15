@@ -11,7 +11,9 @@ import com.wupeng.crm.workbench.domain.Tran;
 import com.wupeng.crm.workbench.domain.TranHistory;
 import com.wupeng.crm.workbench.service.TranService;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class TranServiceImpl implements TranService {
     private TranDao tranDao= SqlSessionUtil.getSqlSession().getMapper(TranDao.class);
@@ -83,5 +85,52 @@ public class TranServiceImpl implements TranService {
     public List<TranHistory> getHistoryListByTranId(String tranId) {
         List<TranHistory> thList=tranHistoryDao.getHistoryListByTranId(tranId);
         return thList;
+    }
+
+    @Override
+    public boolean changeStage(Tran t) {
+
+        boolean flag=true;
+
+        //改变交易阶段
+        int count1=tranDao.changeStage(t);
+        if (count1!=1){
+            flag=false;
+        }
+
+        //添加交易历史
+        TranHistory th = new TranHistory();
+        th.setId(UUIDUtil.getUUID());
+        th.setCreateBy(t.getEditBy());
+        th.setCreateTime(DateTimeUtil.getSysTime());
+        th.setExpectedDate(t.getExpectedDate());
+        th.setMoney(t.getMoney());
+        th.setTranId(t.getId());
+        th.setStage(t.getStage());
+        //添加交易历史
+        int count2 = tranHistoryDao.save(th);
+        if(count2!=1){
+
+            flag = false;
+
+        }
+
+        return flag;
+    }
+
+    @Override
+    public Map<String, Object> getCharts() {
+
+        //取得total
+        int total=tranDao.getTotal();
+
+        //取得dataList
+        List<Map<String,Object>> dataList=tranDao.getCharts();
+
+        //保存到map
+        Map<String, Object> map=new HashMap<>();
+        map.put("total",total);
+        map.put("dataList",dataList);
+        return map;
     }
 }
